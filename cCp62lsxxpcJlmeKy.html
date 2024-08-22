@@ -1,0 +1,142 @@
+<!DOCTYPE html><html><head><base href="https://soundsfy.com"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Soundsfy - Coming Soon</title><script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script><style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        font-family: 'Arial', sans-serif;
+        overflow: hidden;
+        background-color: #0a0a0a;
+        color: #ffffff;
+    }
+    #canvas-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+    #content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        z-index: 10;
+    }
+    h1 {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        text-shadow: 0 0 10px rgba(255,255,255,0.5);
+    }
+    p {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    .cta-button {
+        background-color: #8e44ad;
+        color: white;
+        padding: 15px 30px;
+        font-size: 1.2rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .cta-button:hover {
+        background-color: #9b59b6;
+    }
+</style></head><body><div id="canvas-container"></div><div id="content">
+    <h1 style="font-size: 6rem; text-transform: uppercase; font-weight: bold; cursor: pointer;">Soundsfy</h1>
+    <p>Your AI Voice Creation Platform</p>
+    <p>Coming Soon...</p>
+    <button class="cta-button">Get Notified</button>
+</div><script>
+    // Three.js scene setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+    // Create particles
+    const particlesGeometry = new THREE.BufferGeometry();
+    const particlesCount = 5000;
+    const posArray = new Float32Array(particlesCount * 3);
+
+    for (let i = 0; i < particlesCount * 3; i++) {
+        posArray[i] = (Math.random() - 0.5) * 5;
+    }
+
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+    const particlesMaterial = new THREE.PointsMaterial({
+        size: 0.005,
+        color: 0x8e44ad,
+        transparent: true,
+        opacity: 0.8,
+    });
+
+    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particlesMesh);
+
+    // Create wavy plane
+    const planeGeometry = new THREE.PlaneGeometry(5, 5, 50, 50);
+    const planeMaterial = new THREE.MeshPhongMaterial({
+        color: 0x8e44ad,
+        side: THREE.DoubleSide,
+        wireframe: true,
+    });
+    const planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
+    planeMesh.rotation.x = -Math.PI / 2;
+    scene.add(planeMesh);
+
+    // Add lights
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+
+    const pointLight = new THREE.PointLight(0xffffff, 1);
+    pointLight.position.set(2, 3, 4);
+    scene.add(pointLight);
+
+    camera.position.z = 5;
+
+    // Animation
+    function animate() {
+        requestAnimationFrame(animate);
+
+        particlesMesh.rotation.y += 0.001;
+        particlesMesh.rotation.x += 0.001;
+
+        const time = Date.now() * 0.001;
+        const positions = planeGeometry.attributes.position;
+
+        for (let i = 0; i < positions.count; i++) {
+            const x = positions.getX(i);
+            const y = positions.getY(i);
+            const z = 0.1 * Math.sin(x * 2 + time) * Math.cos(y * 2 + time);
+            positions.setZ(i, z);
+        }
+
+        positions.needsUpdate = true;
+
+        renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // Resize handler
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // Button animation
+    const button = document.querySelector('.cta-button');
+    gsap.to(button, {
+        scale: 1.1,
+        duration: 0.5,
+        repeat: -1,
+        yoyo: true,
+        ease: "power1.inOut"
+    });
+</script></body></html>
